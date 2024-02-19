@@ -1,4 +1,4 @@
 # GRAPHICS
-Repo for computer graphics seminar
+Repo for Computer Graphics Seminar
 
 Nádpataki-Sass Bálint RBSFOP
