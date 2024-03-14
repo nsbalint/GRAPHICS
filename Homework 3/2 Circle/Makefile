@@ -1,2 +1,2 @@
 all:
-	gcc main.c circle.c -lm -o circle.exe
+	gcc -o circle circle.c main.c -lmingw32 -lSDL2main -lSDL2
