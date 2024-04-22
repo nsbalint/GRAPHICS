@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #include <stdbool.h>
 
 #define WINDOW_WIDTH 1920
@@ -12,6 +13,7 @@
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 TTF_Font *font = NULL;
+SDL_Texture *backgroundTexture = NULL;
 bool game_is_running = false;
 bool in_main_menu = true;
 bool in_game_play = false;
@@ -66,7 +68,7 @@ void init_resources()
     }
 
     // Load font with desired size (e.g., 36)
-    font = TTF_OpenFont("assets/font/Ubuntu-Bold.ttf", fontSize); // Replace "arial.ttf" with your font file
+    font = TTF_OpenFont("assets/fonts/Ubuntu-Bold.ttf", fontSize); // Replace "arial.ttf" with your font file
     if (!font)
     {
         printf("Failed to load font: %s\n", TTF_GetError());
@@ -77,12 +79,42 @@ void init_resources()
     startTime = SDL_GetTicks();
 }
 
+void load_media()
+{
+    SDL_Surface *surface = IMG_Load("assets/textures/background.jpeg");
+    if (!surface)
+    {
+        printf("Failed to load image: %s\n", IMG_GetError());
+        return;
+    }
+
+    backgroundTexture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+    if (!backgroundTexture)
+    {
+        printf("Failed to create texture: %s\n", SDL_GetError());
+        return;
+    }
+}
+
 void setup()
 {
-    ball.x = 20;
-    ball.y = 20;
+    ball.x = WINDOW_WIDTH / 2 - 50;
+    ball.y = WINDOW_HEIGHT / 2 - 50;
     ball.width = 15;
     ball.height = 15;
+}
+
+void restartGame()
+{
+    in_main_menu = true;
+    in_game_play = false;
+
+    startTime = SDL_GetTicks();
+    currentTime = 0;
+    elapsedTime = 0;
+    remainingTime = GAME_DURATION;
 }
 
 void process_input()
@@ -107,6 +139,10 @@ void process_input()
                     in_game_play = true;
                     break;
                 case SDLK_2:
+                case SDLK_BACKQUOTE:
+                    restartGame();
+                    break;
+                case SDLK_3:
                 case SDLK_ESCAPE:
                     printf("Exiting Game!\n");
                     game_is_running = false;
@@ -216,40 +252,6 @@ void update()
         }
     }
 }
-
-void render_main_menu()
-{
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-    SDL_RenderClear(renderer);
-
-    SDL_Color textColor = {0, 0, 0, 255};
-
-    // Render menu options
-    render_text("PRESS '1' TO START GAME", font, textColor, 100, 600);
-    render_text("PRESS '2' TO ESCAPE GAME", font, textColor, 100, 700);
-
-    SDL_RenderPresent(renderer);
-}
-
-void render_game()
-{
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderClear(renderer);
-
-    // Render ball
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_Rect ballRect = {(int)ball.x, (int)ball.y, (int)ball.width, (int)ball.height};
-    SDL_RenderFillRect(renderer, &ballRect);
-
-    // Render remaining time at the top of the screen
-    SDL_Color textColor = {255, 0, 0, 255};
-    char timeText[50];
-    snprintf(timeText, sizeof(timeText), " %d ", remainingTime / 1000);
-    render_text(timeText, font, textColor, (WINDOW_WIDTH / 2) - fontSize, 20);
-
-    SDL_RenderPresent(renderer);
-}
-
 void render_text(const char *text, TTF_Font *font, SDL_Color color, int x, int y)
 {
     SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
@@ -266,9 +268,70 @@ void render_text(const char *text, TTF_Font *font, SDL_Color color, int x, int y
     }
 }
 
+void render_main_menu()
+{
+    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_RenderClear(renderer);
+
+    SDL_Surface *surface = IMG_Load("assets/textures/background.jpeg");
+    if (!surface)
+    {
+        printf("Failed to load image: %s\n", IMG_GetError());
+        return;
+    }
+
+    backgroundTexture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+    if (!backgroundTexture)
+    {
+        printf("Failed to create texture: %s\n", SDL_GetError());
+        return;
+    }
+
+    if (backgroundTexture)
+    {
+        SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
+    }
+
+    SDL_Color textColor = {0, 0, 0, 255};
+
+    // Render menu options
+    render_text("PRESS '1' TO START GAME", font, textColor, 100, 600);
+    render_text("PRESS '2' TO RESTART GAME", font, textColor, 100, 700);
+    render_text("PRESS '3' TO ESCAPE GAME", font, textColor, 100, 800);
+
+    SDL_RenderPresent(renderer);
+}
+
+void render_game()
+{
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+
+    if (backgroundTexture)
+    {
+        SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
+    }
+
+    // Render ball
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+    SDL_Rect ballRect = {(int)ball.x, (int)ball.y, (int)ball.width, (int)ball.height};
+    SDL_RenderFillRect(renderer, &ballRect);
+
+    // Render remaining time at the top of the screen
+    SDL_Color textColor = {255, 0, 0, 255};
+    char timeText[50];
+    snprintf(timeText, sizeof(timeText), " %d ", remainingTime / 1000);
+    render_text(timeText, font, textColor, ((WINDOW_WIDTH / 2) - fontSize) - fontSize, 10);
+
+    SDL_RenderPresent(renderer);
+}
+
 void cleanup()
 {
     TTF_CloseFont(font);
+    SDL_DestroyTexture(backgroundTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     TTF_Quit();
@@ -278,6 +341,7 @@ void cleanup()
 int main(int argc, char *argv[])
 {
     init_resources();
+    load_media();
     setup();
 
     game_is_running = true;

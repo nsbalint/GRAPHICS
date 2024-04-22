@@ -1,4 +1,4 @@
 gcc:
-	gcc  -o tut src/main.c -lmingw32 -lSDL2main -lSDL2 -Wall
+	gcc main.c -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -o game.exe
 run:
-	./tut
+	./game
