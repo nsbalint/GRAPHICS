@@ -1,6 +1,0 @@
-*.exe
-.gitignore
-SDL2.dll
-
-Beadandó/assets/textures/background.jpeg
-Beadandó/assets/font/arial.ttf
