@@ -17,11 +17,11 @@ typedef struct Timer
     GLuint timer_texture;
 
     GLuint timer_0_texture;
-    GLuint timer_1_texture;
-    GLuint timer_2_texture;
-    GLuint timer_3_texture;
-    GLuint timer_4_texture;
-    GLuint timer_5_texture;
+    GLuint timer_10_texture;
+    GLuint timer_20_texture;
+    GLuint timer_30_texture;
+    GLuint timer_40_texture;
+    GLuint timer_50_texture;
 } Timer;
 
 void init_timer(Timer *timer);
