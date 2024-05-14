@@ -1,5 +1,4 @@
 {
-  "C_Cpp.errorSquiggles": "enabled",
   "files.associations": {
     "*.rmd": "markdown",
     "sdl_ttf.h": "c",
@@ -8,6 +7,10 @@
     "stdio.h": "c",
     "tut.h": "c",
     "freeglut.h": "c",
-    "freeglut_std.h": "c"
+    "freeglut_std.h": "c",
+    "camera.h": "c",
+    "draw.h": "c",
+    "texture.h": "c",
+    "sdl.h": "c"
   }
 }
