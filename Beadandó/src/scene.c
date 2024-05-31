@@ -46,8 +46,6 @@ void init_scene(Scene *scene)
     scene->material.specular.green = 0.0;
     scene->material.specular.blue = 0.0;
 
-    scene->material.shininess = 0.0;
-
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_FOG);
@@ -59,11 +57,11 @@ void init_scene(Scene *scene)
     scene->light = 0.4f;
 
     init_environment(&(scene->environment));
-    init_diamond(&(scene->diamond));
+    init_penguin(&(scene->penguin));
     init_timer(&(scene->timer));
 
     scene->showHelp = 1;
-    scene->diamond.score = 0;
+    scene->penguin.score = 0;
     scene->timer.start = clock();
     scene->show_win = false;
     scene->show_lose = false;
@@ -102,14 +100,13 @@ void set_material(const Material *material)
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient_material_color);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse_material_color);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular_material_color);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &(material->shininess));
 }
 
 void update_scene(Scene *scene)
 {
     glFogf(GL_FOG_DENSITY, scene->fog_strength);
     set_lighting(scene->light);
-    if (scene->diamond.score > 9)
+    if (scene->penguin.score > 9)
     {
         scene->show_win = true;
     }
@@ -119,13 +116,14 @@ void update_scene(Scene *scene)
         scene->show_lose = true;
 }
 
-void place_diamond(Scene *scene)
+void place_penguin(Scene *scene)
 {
     srand(rand());
     float random_x = (float)rand() / (float)(RAND_MAX / 14) - 7;
     float random_y = (float)rand() / (float)(RAND_MAX / 14) - 7;
-    scene->diamond.diamond_x = random_x;
-    scene->diamond.diamond_y = random_y;
+    scene->penguin.penguin_x = random_x;
+    scene->penguin.penguin_y = random_y;
+    scene->penguin.position_z = 0;
 }
 
 void render_scene(const Scene *scene)
@@ -138,27 +136,30 @@ void render_scene(const Scene *scene)
     draw_model(&(scene->ground));
     glPopMatrix();
 
-    // diamond
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    float ambient_material_color[] = {0.2f, 0.58f, 0.92f};
-    float diffuse_material_color[] = {1.0f, 1.0f, 1.0f, 0.85f};
-    float specular_material_color[] = {1.0f, 1.0f, 1.0f};
 
-    float shininess = 50.0;
+    // More neutral ambient material color
+    float ambient_material_color[] = {0.5f, 0.5f, 0.5f}; // Gray
+
+    // More neutral diffuse material color
+    float diffuse_material_color[] = {0.7f, 0.7f, 0.7f, 0.85f}; // Light gray with some transparency
+
+    // More neutral specular material color
+    float specular_material_color[] = {0.9f, 0.9f, 0.9f}; // Almost white but not overly bright
+
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient_material_color);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse_material_color);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular_material_color);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &shininess);
 
     glPushMatrix();
     glScalef(1, 1, 1);
-    glBindTexture(GL_TEXTURE_2D, scene->diamond.diamond_texture);
+    glBindTexture(GL_TEXTURE_2D, scene->penguin.penguin_texture);
 
-    glTranslatef(scene->diamond.diamond_x, scene->diamond.diamond_y, scene->diamond.position_z);
+    glTranslatef(scene->penguin.penguin_x, scene->penguin.penguin_y, scene->penguin.position_z);
     glRotated(90, 1, 0, 0);
-    glRotatef(scene->diamond.rotation_x, 0, 1, 0);
-    draw_model(&(scene->diamond.diamond));
+    glRotatef(scene->penguin.rotation_x, 0, 1, 0);
+    draw_model(&(scene->penguin.penguin));
     glPopMatrix();
 
     set_material(&(scene->material));
@@ -181,22 +182,6 @@ void render_scene(const Scene *scene)
     draw_model(&(scene->environment.Snowman));
     glPopMatrix();
 
-    // stone
-    glPushMatrix();
-    glScalef(0.5, 0.5, 0.5);
-    glBindTexture(GL_TEXTURE_2D, scene->environment.stone_texture);
-    glRotated(90, 1, 0, 0);
-    draw_model(&(scene->environment.Stone));
-    glPopMatrix();
-
-    // bush
-    glPushMatrix();
-    glScalef(0.5, 0.5, 0.5);
-    glBindTexture(GL_TEXTURE_2D, scene->environment.bush_texture);
-    glRotated(90, 1, 0, 0);
-    draw_model(&(scene->environment.Bush));
-    glPopMatrix();
-
     // hill
     glPushMatrix();
     glScalef(0.5, 0.5, 0.5);
@@ -213,7 +198,7 @@ void render_scene(const Scene *scene)
     draw_model(&(scene->skybox));
     glPopMatrix();
 
-    points(&(scene->diamond));
+    points(&(scene->penguin));
     clocks(&(scene->timer));
 }
 
@@ -278,7 +263,7 @@ void winAndLose(GLuint texture)
 
 void restart(Scene *scene)
 {
-    scene->diamond.score = 0;
+    scene->penguin.score = 0;
     scene->timer.start = clock();
     scene->show_win = false;
     scene->show_lose = false;

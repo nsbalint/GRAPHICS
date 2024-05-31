@@ -226,8 +226,8 @@ void update_app(App *app)
     double current_time;
     double elapsed_time;
     double last_time;
-    double diamond_x = app->scene.diamond.diamond_x;
-    double diamond_y = app->scene.diamond.diamond_y;
+    double penguin_x = app->scene.penguin.penguin_x;
+    double penguin_y = app->scene.penguin.penguin_y;
 
     current_time = (double)SDL_GetTicks() / 1000;
     elapsed_time = current_time - app->uptime;
@@ -239,23 +239,23 @@ void update_app(App *app)
 
     double range = 0.65;
 
-    if (diamond_x - range < app->camera.position.x && app->camera.position.x < diamond_x + range)
+    if (penguin_x - range < app->camera.position.x && app->camera.position.x < penguin_x + range)
     {
-        if (diamond_y - range < app->camera.position.y && app->camera.position.y < diamond_y + range)
+        if (penguin_y - range < app->camera.position.y && app->camera.position.y < penguin_y + range)
         {
-            app->scene.diamond.score++;
-            place_diamond(&(app->scene));
+            app->scene.penguin.score++;
+            place_penguin(&(app->scene));
         }
     }
 
-    app->scene.diamond.rotation_x += 1 * 0.065;
+    app->scene.penguin.rotation_x += 1 * 0.065;
 
-    if (app->scene.diamond.rotation_x > 360.0)
+    if (app->scene.penguin.rotation_x > 360.0)
     {
-        app->scene.diamond.rotation_x -= 360.0;
+        app->scene.penguin.rotation_x -= 360.0;
     }
 
-    app->scene.diamond.position_z = (sin((current_time - last_time)) + 1.7) / 10.5 + 0.55;
+    app->scene.penguin.position_z = (sin((current_time - last_time)) + 1.7) / 10.5 + 0.55;
     last_time = current_time;
 }
 

@@ -72,15 +72,14 @@ void clocks(Timer *timer)
 
     glBegin(GL_QUADS);
 
-    // Adjust the vertex coordinates to make the quad smaller
     glTexCoord2f(0, 0);
-    glVertex3d(-2.5, 1.5, -3); // Top-left corner
+    glVertex3d(-2.5, 1.5, -3);
     glTexCoord2f(1, 0);
-    glVertex3d(-1.5, 1.5, -3); // Top-right corner
+    glVertex3d(-1.5, 1.5, -3);
     glTexCoord2f(1, 1);
-    glVertex3d(-1.5, 1.0, -3); // Bottom-right corner
+    glVertex3d(-1.5, 1.0, -3);
     glTexCoord2f(0, 1);
-    glVertex3d(-2.5, 1.0, -3); // Bottom-left corner
+    glVertex3d(-2.5, 1.0, -3);
 
     glEnd();
 

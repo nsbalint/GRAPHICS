@@ -4,14 +4,14 @@
 #include "texture.h"
 #include <math.h>
 #include <obj/model.h>
-#include "diamond.h"
+#include "penguin.h"
 #include "timer.h"
 #include "environment.h"
 #include <time.h>
 typedef struct Scene
 {
     Material material;
-    Diamond diamond;
+    Penguin penguin;
     Timer timer;
     int difficulty;
     float fog_strength;
@@ -43,9 +43,9 @@ typedef struct Scene
 } Scene;
 
 /**
- * Place the diamond on a random spot.
+ * Place the penguin on a random spot.
  */
-void place_diamond(Scene *scene);
+void place_penguin(Scene *scene);
 
 /**
  * Initialize the scene by loading models.

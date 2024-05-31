@@ -12,17 +12,11 @@ typedef struct Environment
     Model Tree;
     GLuint tree_texture;
 
-    Model Stone;
-    GLuint stone_texture;
-
-    Model Bush;
-    GLuint bush_texture;
+    Model Hill;
+    GLuint hill_texture;
 
     Model Snowman;
     GLuint snowman_texture;
-
-    Model Hill;
-    GLuint hill_texture;
 
 } Environment;
 

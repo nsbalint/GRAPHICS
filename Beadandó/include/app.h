@@ -3,7 +3,7 @@
 
 #include "camera.h"
 #include "scene.h"
-#include "diamond.h"
+#include "penguin.h"
 
 #include <SDL2/SDL.h>
 
