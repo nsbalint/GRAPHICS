@@ -8,6 +8,11 @@
     "stdio.h": "c",
     "tut.h": "c",
     "freeglut.h": "c",
-    "freeglut_std.h": "c"
+    "freeglut_std.h": "c",
+    "sortalgorithm.h": "c",
+    "scene.h": "c",
+    "camera.h": "c",
+    "model.h": "c",
+    "utils.h": "c"
   }
 }

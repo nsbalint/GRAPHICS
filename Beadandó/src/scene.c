@@ -1,31 +1,38 @@
-
 #include "scene.h"
-#include "environment.h"
 
 #include <obj/load.h>
 #include <obj/draw.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 void init_scene(Scene *scene)
 {
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
+    scene->difficulty = 1;
+    scene->fog_strength = 0.07;
+
+    scene->easy_on = load_texture("assets/textures/easy_1.jpg");
+    scene->medium_on = load_texture("assets/textures/normal_1.jpg");
+    scene->hard_on = load_texture("assets/textures/hard_1.jpg");
+    scene->easy_off = load_texture("assets/textures/easy_0.jpg");
+    scene->medium_off = load_texture("assets/textures/normal_0.jpg");
+    scene->hard_off = load_texture("assets/textures/hard_0.jpg");
+
     load_model(&(scene->ground), "assets/models/ground.obj");
-    scene->ground_texture_id = load_texture("assets/textures/ground.jpg");
+    scene->ground_texture = load_texture("assets/textures/ground_texture.jpg");
 
-    load_model(&(scene->penguin), "assets/models/penguin.obj");
-    scene->penguin_texture_id = load_texture("assets/textures/penguin.jpg");
+    scene->help_texture_id = load_texture("assets/textures/help_texture.jpg");
 
-    load_model(&(scene->skybox), "assets/models/skybox.obj");
-    scene->skybox_texture_id = load_texture("assets/textures/sky.jfif");
+    load_model(&(scene->skybox), "assets/models/skyboxSphere.obj");
+    scene->skybox_texture = load_texture("assets/textures/sky.jfif");
 
-    scene->help_texture_id = load_texture("assets/textures/Untitled-2.png");
-    scene->end_textrue_id = load_texture("assets/textures/gameover.jpg");
+    scene->win_texture = load_texture("assets/textures/win.jpg");
+    scene->lose_texture = load_texture("assets/textures/lose.jpg");
 
     scene->material.ambient.red = 0.0;
     scene->material.ambient.green = 0.0;
@@ -41,24 +48,32 @@ void init_scene(Scene *scene)
 
     scene->material.shininess = 0.0;
 
-    scene->light = 1.0f;
-
-    scene->showHelp = 0;
-
-    init_penguin(&(scene->penguin));
-
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
     glEnable(GL_FOG);
-    GLfloat fogColor[] = {0.5f, 0.5f, 0.5f, 1.0f};
-    glFogfv(GL_FOG_COLOR, fogColor);
-    glFogi(GL_FOG_MODE, GL_LINEAR);
-    scene->fogposition = 0.0f;
+    float color[] = {0.5, 0.5, 0.5, 1.0};
+    glFogfv(GL_FOG_COLOR, color);
+    glFogf(GL_FOG_DENSITY, scene->fog_strength);
+    glFogf(GL_FOG_START, 0.0f);
+    glFogf(GL_FOG_END, 1.0f);
+    scene->light = 0.4f;
+
+    init_environment(&(scene->environment));
+    init_diamond(&(scene->diamond));
+    init_timer(&(scene->timer));
+
+    scene->showHelp = 1;
+    scene->diamond.score = 0;
+    scene->timer.start = clock();
+    scene->show_win = false;
+    scene->show_lose = false;
 }
 
 void set_lighting(float x)
 {
     float ambient_light[] = {x, x, x, 1.0f};
     float diffuse_light[] = {x, x, x, 1.0f};
-    float specular_light[] = {0.0f, 0.0f, 0.0f, 1.0f};
+    float specular_light[] = {x, x, x, 1.0f};
     float position[] = {0.0f, 0.0f, 10.0f, 1.0f};
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light);
@@ -87,24 +102,38 @@ void set_material(const Material *material)
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient_material_color);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse_material_color);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular_material_color);
-
     glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &(material->shininess));
 }
 
 void update_scene(Scene *scene)
 {
+    glFogf(GL_FOG_DENSITY, scene->fog_strength);
     set_lighting(scene->light);
+    if (scene->diamond.score > 9)
+    {
+        scene->show_win = true;
+    }
 
-    glFogf(GL_FOG_START, scene->fogposition);
-    glFogf(GL_FOG_END, scene->fogposition + 10.0f);
+    scene->timer.end = clock();
+    if ((float)(scene->timer.end - scene->timer.start) / CLOCKS_PER_SEC > scene->timer.max_time)
+        scene->show_lose = true;
 }
+
+void place_diamond(Scene *scene)
+{
+    srand(rand());
+    float random_x = (float)rand() / (float)(RAND_MAX / 14) - 7;
+    float random_y = (float)rand() / (float)(RAND_MAX / 14) - 7;
+    scene->diamond.diamond_x = random_x;
+    scene->diamond.diamond_y = random_y;
+}
+
 void render_scene(const Scene *scene)
 {
-
     // ground
     glPushMatrix();
-    glScalef(1, 1, 1);
-    glBindTexture(GL_TEXTURE_2D, scene->ground_texture_id);
+    glScalef(0.5, 0.5, 0.5);
+    glBindTexture(GL_TEXTURE_2D, scene->ground_texture);
     glRotated(90, 1, 0, 0);
     draw_model(&(scene->ground));
     glPopMatrix();
@@ -123,10 +152,13 @@ void render_scene(const Scene *scene)
     glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &shininess);
 
     glPushMatrix();
-    glBindTexture(GL_TEXTURE_2D, scene->penguin.penguin_texture);
+    glScalef(1, 1, 1);
+    glBindTexture(GL_TEXTURE_2D, scene->diamond.diamond_texture);
 
+    glTranslatef(scene->diamond.diamond_x, scene->diamond.diamond_y, scene->diamond.position_z);
     glRotated(90, 1, 0, 0);
-    draw_model(&(scene->penguin.penguin));
+    glRotatef(scene->diamond.rotation_x, 0, 1, 0);
+    draw_model(&(scene->diamond.diamond));
     glPopMatrix();
 
     set_material(&(scene->material));
@@ -141,23 +173,48 @@ void render_scene(const Scene *scene)
     draw_model(&(scene->environment.Tree));
     glPopMatrix();
 
+    // snowman
+    glPushMatrix();
+    glScalef(0.5, 0.5, 0.5);
+    glBindTexture(GL_TEXTURE_2D, scene->environment.snowman_texture);
+    glRotated(90, 1, 0, 0);
+    draw_model(&(scene->environment.Snowman));
+    glPopMatrix();
+
+    // stone
+    glPushMatrix();
+    glScalef(0.5, 0.5, 0.5);
+    glBindTexture(GL_TEXTURE_2D, scene->environment.stone_texture);
+    glRotated(90, 1, 0, 0);
+    draw_model(&(scene->environment.Stone));
+    glPopMatrix();
+
+    // bush
+    glPushMatrix();
+    glScalef(0.5, 0.5, 0.5);
+    glBindTexture(GL_TEXTURE_2D, scene->environment.bush_texture);
+    glRotated(90, 1, 0, 0);
+    draw_model(&(scene->environment.Bush));
+    glPopMatrix();
+
+    // hill
+    glPushMatrix();
+    glScalef(0.5, 0.5, 0.5);
+    glBindTexture(GL_TEXTURE_2D, scene->environment.hill_texture);
+    glRotated(90, 1, 0, 0);
+    draw_model(&(scene->environment.Hill));
+    glPopMatrix();
+
     // skybox
     glPushMatrix();
-    glScalef(1, 1, 1);
-    glBindTexture(GL_TEXTURE_2D, scene->skybox_texture_id);
-    glRotated(90, 1, 0, 0);
+    glScalef(0.5, 0.5, 0.5);
+    glBindTexture(GL_TEXTURE_2D, scene->skybox_texture);
+
     draw_model(&(scene->skybox));
     glPopMatrix();
 
-    // snowman
-    glColor3f(1, 1, 1);
-    glPushMatrix();
-    glScalef(0.5, 0.5, 0.5);
-    glBindTexture(GL_TEXTURE_2D, scene->penguin_texture_id);
-    glRotated(90, 1, 0, 0);
-    glTranslatef(1, 0, 1);
-    draw_model(&(scene->penguin));
-    glPopMatrix();
+    points(&(scene->diamond));
+    clocks(&(scene->timer));
 }
 
 void draw_origin()
@@ -179,10 +236,10 @@ void draw_origin()
     glEnd();
 }
 
-void help(GLuint texture)
+void additionalWindows(GLuint texture, float different)
 {
     glDisable(GL_FOG);
-    //  glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHTING);
     glEnable(GL_COLOR_MATERIAL);
     glDisable(GL_DEPTH_TEST);
 
@@ -196,15 +253,64 @@ void help(GLuint texture)
     glTexCoord2f(0, 0);
     glVertex3d(-2, 1.5, -3);
     glTexCoord2f(1, 0);
-    glVertex3d(2, 1.5, -3);
+    glVertex3d(different, 1.5, -3);
     glTexCoord2f(1, 1);
-    glVertex3d(2, -1.5, -3);
+    glVertex3d(different, -1.5, -3);
     glTexCoord2f(0, 1);
     glVertex3d(-2, -1.5, -3);
     glEnd();
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_COLOR_MATERIAL);
-    //  glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHTING);
     glEnable(GL_FOG);
+}
+
+void help(GLuint texture)
+{
+    additionalWindows(texture, 0.7);
+}
+
+void winAndLose(GLuint texture)
+{
+    additionalWindows(texture, 2);
+}
+
+void restart(Scene *scene)
+{
+    scene->diamond.score = 0;
+    scene->timer.start = clock();
+    scene->show_win = false;
+    scene->show_lose = false;
+}
+
+void draw(GLuint texture, float x1, float y1, float x2, float y2)
+{
+    glDisable(GL_FOG);
+    glDisable(GL_LIGHTING);
+    glEnable(GL_COLOR_MATERIAL);
+    glDisable(GL_DEPTH_TEST);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glColor3f(1, 1, 1);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0, 0);
+    glVertex3d(x1, y1, -3);
+    glTexCoord2f(1, 0);
+    glVertex3d(x2, y1, -3);
+    glTexCoord2f(1, 1);
+    glVertex3d(x2, y2, -3);
+    glTexCoord2f(0, 1);
+    glVertex3d(x1, y2, -3);
+    glEnd();
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_FOG);
+
+    glFrustum(
+        -.08, .08,
+        -.06, .06,
+        .1, 6000);
 }

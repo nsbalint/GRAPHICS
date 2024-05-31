@@ -1,48 +1,80 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "camera.h"
 #include "texture.h"
-#include "environment.h"
-#include "penguin.h"
-#include <obj/model.h>
 #include <math.h>
-
+#include <obj/model.h>
+#include "diamond.h"
+#include "timer.h"
+#include "environment.h"
+#include <time.h>
 typedef struct Scene
 {
-
     Material material;
+    Diamond diamond;
+    Timer timer;
+    int difficulty;
+    float fog_strength;
 
     Model ground;
-    GLuint ground_texture_id;
+    GLuint ground_texture;
+    float light;
+
+    bool show_win;
+    bool show_lose;
+    GLuint win_texture;
+    GLuint lose_texture;
 
     Model skybox;
-    GLuint skybox_texture_id;
+    GLuint skybox_texture;
 
-    Penguin penguin;
-    GLuint penguin_texture;
-
-    GLuint help_texture_id;
-    int showHelp;
-
-    float light;
-    GLuint end_textrue_id;
+    GLuint easy_on;
+    GLuint medium_on;
+    GLuint hard_on;
+    GLuint easy_off;
+    GLuint medium_off;
+    GLuint hard_off;
 
     Environment environment;
-    float fogposition;
+
+    int showHelp;
+    GLuint help_texture_id;
 
 } Scene;
 
+/**
+ * Place the diamond on a random spot.
+ */
+void place_diamond(Scene *scene);
+
+/**
+ * Initialize the scene by loading models.
+ */
 void init_scene(Scene *scene);
 
+/**
+ * Set the lighting of the scene.
+ */
 void set_lighting(float x);
 
+/**
+ * Set the current material.
+ */
 void set_material(const Material *material);
 
+/**
+ * Update the scene.
+ */
 void update_scene(Scene *scene);
 
+/**
+ * Render the scene objects.
+ */
 void render_scene(const Scene *scene);
 
+/**
+ * Draw the origin of the world coordinate system.
+ */
 void draw_origin();
 
 void help(GLuint texture);
@@ -55,4 +87,4 @@ void restart(Scene *scene);
 
 void draw(GLuint texture, float x1, float y1, float x2, float y2);
 
-#endif
+#endif /* SCENE_H */

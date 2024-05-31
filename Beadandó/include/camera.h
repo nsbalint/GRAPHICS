@@ -5,6 +5,9 @@
 
 #include <stdbool.h>
 
+/**
+ * Camera, as a moving point with direction
+ */
 typedef struct Camera
 {
     vec3 position;
@@ -13,22 +16,40 @@ typedef struct Camera
     bool is_preview_visible;
 } Camera;
 
+/**
+ * Initialize the camera to the start position.
+ */
 void init_camera(Camera *camera);
 
+/**
+ * Update the position of the camera.
+ */
 void update_camera(Camera *camera, double time);
 
+/**
+ * Apply the camera settings to the view transformation.
+ */
 void set_view(const Camera *camera);
 
+/**
+ * Set the horizontal and vertical rotation of the view angle.
+ */
 void rotate_camera(Camera *camera, double horizontal, double vertical);
 
+/**
+ * Set the speed of forward and backward motion.
+ */
 void set_camera_speed(Camera *camera, double speed);
 
+/**
+ * Set the speed of left and right side steps.
+ */
 void set_camera_side_speed(Camera *camera, double speed);
 
-void show_texture_preview();
-
+/* Main function to call collision checks*/
 int check_collisions(vec3 newPosition);
 
+/* Function that calculates collision */
 int calc_collision(vec3 newPosition, float posX, float posY, float boxSizeX, float boxSizeY);
 
-#endif
+#endif /* CAMERA_H */

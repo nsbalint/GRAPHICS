@@ -78,12 +78,12 @@ void rotate_camera(Camera *camera, double horizontal, double vertical)
 
 void set_camera_speed(Camera *camera, double speed)
 {
-    camera->speed.y = speed*3;
+    camera->speed.y = speed * 3;
 }
 
 void set_camera_side_speed(Camera *camera, double speed)
 {
-    camera->speed.x = speed*3;
+    camera->speed.x = speed * 3;
 }
 
 void show_texture_preview()
@@ -123,10 +123,10 @@ int check_collisions(vec3 newposition)
     if ((newposition.x < -8) || (newposition.x > 8))
         return 1;
 
-    //Trees
+    // Trees
     if (calc_collision(newposition, 2.53, -5.51, 0.2, 0.3) == 1)
         return 1;
-    
+
     if (calc_collision(newposition, -5.373, 4.304, 0.2, 0.3) == 1)
         return 1;
 

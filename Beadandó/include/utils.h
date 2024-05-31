@@ -1,6 +1,9 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+/**
+ * GLSL-like three dimensional vector
+ */
 typedef struct vec3
 {
     float x;
@@ -8,6 +11,9 @@ typedef struct vec3
     float z;
 } vec3;
 
+/**
+ * Color with RGB components
+ */
 typedef struct Color
 {
     float red;
@@ -15,6 +21,9 @@ typedef struct Color
     float blue;
 } Color;
 
+/**
+ * Material
+ */
 typedef struct Material
 {
     struct Color ambient;
@@ -23,6 +32,9 @@ typedef struct Material
     float shininess;
 } Material;
 
+/**
+ * Calculates radian from degree.
+ */
 double degree_to_radian(double degree);
 
-#endif
+#endif /* UTILS_H */

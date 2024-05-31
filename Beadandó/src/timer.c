@@ -5,12 +5,12 @@
 
 void init_timer(Timer *timer)
 {
-    timer->timer_0_texture = load_texture("assets/textures/clock50.png");
-    timer->timer_1_texture = load_texture("assets/textures/clock40.png");
-    timer->timer_2_texture = load_texture("assets/textures/clock30.png");
-    timer->timer_3_texture = load_texture("assets/textures/clock20.png");
-    timer->timer_4_texture = load_texture("assets/textures/clock10.png");
-    timer->timer_5_texture = load_texture("assets/textures/clock0.png");
+    timer->timer_0_texture = load_texture("assets/textures/clock50.jpg");
+    timer->timer_1_texture = load_texture("assets/textures/clock40.jpg.jpg");
+    timer->timer_2_texture = load_texture("assets/textures/clock30.jpg");
+    timer->timer_3_texture = load_texture("assets/textures/clock20.jpg");
+    timer->timer_4_texture = load_texture("assets/textures/clock10.jpg");
+    timer->timer_5_texture = load_texture("assets/textures/clock0.jpg");
 
     timer->max_time;
 }
@@ -58,14 +58,30 @@ void clocks(Timer *timer)
     glBindTexture(GL_TEXTURE_2D, render_texture);
 
     glBegin(GL_QUADS);
+
+    glDisable(GL_LIGHTING);
+    // glDisable(GL_FOG);
+    glEnable(GL_COLOR_MATERIAL);
+    glDisable(GL_DEPTH_TEST);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glColor3f(1, 1, 1);
+    glBindTexture(GL_TEXTURE_2D, render_texture);
+
+    glBegin(GL_QUADS);
+
+    // Adjust the vertex coordinates to make the quad smaller
     glTexCoord2f(0, 0);
-    glVertex3d(-2.33, 1.70, -3);
+    glVertex3d(-2.5, 1.5, -3); // Top-left corner
     glTexCoord2f(1, 0);
-    glVertex3d(-1.55, 1.70, -3);
+    glVertex3d(-1.5, 1.5, -3); // Top-right corner
     glTexCoord2f(1, 1);
-    glVertex3d(-1.55, 1.43, -3);
+    glVertex3d(-1.5, 1.0, -3); // Bottom-right corner
     glTexCoord2f(0, 1);
-    glVertex3d(-2.33, 1.43, -3);
+    glVertex3d(-2.5, 1.0, -3); // Bottom-left corner
+
     glEnd();
 
     glEnable(GL_DEPTH_TEST);

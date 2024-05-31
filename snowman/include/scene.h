@@ -1,11 +1,11 @@
 #ifndef SCENE_H
 #define SCENE_H
-#include "sword.h"
 
 #include "camera.h"
 #include "texture.h"
 #include "penguin.h"
 #include <obj/model.h>
+#include "environment.h"
 #include <math.h>
 
 typedef struct Scene
@@ -30,8 +30,6 @@ typedef struct Scene
     GLuint hp_1_texture_id;
     GLuint hp_2_texture_id;
     GLuint hp_3_texture_id;
-
-    Sword sword;
 
     bool showHelp;
     bool difficulty;
