@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     App app;
 
-    init_app(&app, 1200, 800);
+    init_app(&app, 1920, 1080);
     while (app.is_running)
     {
         handle_app_events(&app);

@@ -37,7 +37,7 @@ void init_app(App *app, int width, int height)
     reshape(width, height);
 
     init_camera(&(app->camera));
-    init_scene(&(app->scene));
+    init_scene(&(app->scene)); // This ensures show_lose is set to false
 
     app->is_running = true;
 }
@@ -102,6 +102,9 @@ void handle_app_events(App *app)
     static int mouse_y = 0;
     int x;
     int y;
+
+    // Inicializáljuk az egér pozícióját a program elején
+    SDL_GetMouseState(&mouse_x, &mouse_y);
 
     while (SDL_PollEvent(&event))
     {
@@ -197,11 +200,12 @@ void handle_app_events(App *app)
             }
             break;
         case SDL_MOUSEBUTTONDOWN:
-            is_mouse_down = true;
+            // Eltávolítjuk az is_mouse_down változót
             break;
         case SDL_MOUSEMOTION:
             SDL_GetMouseState(&x, &y);
-            if (is_mouse_down && !(app->scene.show_win || app->scene.show_lose))
+            // Az egér mozgásának kezelése folyamatosan történik, függetlenül attól, hogy az egér gomb le van-e nyomva
+            if (!(app->scene.show_win || app->scene.show_lose))
             {
                 rotate_camera(&(app->camera), mouse_x - x, mouse_y - y);
             }
@@ -209,7 +213,7 @@ void handle_app_events(App *app)
             mouse_y = y;
             break;
         case SDL_MOUSEBUTTONUP:
-            is_mouse_down = false;
+            // Eltávolítjuk az is_mouse_down változót
             break;
         case SDL_QUIT:
             app->is_running = false;
@@ -255,7 +259,7 @@ void update_app(App *app)
         app->scene.penguin.rotation_x -= 360.0;
     }
 
-    app->scene.penguin.position_z = (sin((current_time - last_time)) + 1.7) / 10.5 + 0.55;
+    app->scene.penguin.position_z = 0;
     last_time = current_time;
 }
 

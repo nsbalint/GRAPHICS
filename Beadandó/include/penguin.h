@@ -26,6 +26,8 @@ typedef struct Penguin
     float penguin_y;
     float rotation_x;
     float position_z;
+    double direction_x;
+    double direction_y;
     int score;
 
 } Penguin;

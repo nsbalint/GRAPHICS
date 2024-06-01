@@ -12,7 +12,8 @@ void init_scene(Scene *scene)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
+    scene->show_win = false;
+    scene->show_lose = false;
     scene->difficulty = 1;
     scene->fog_strength = 0.07;
 
@@ -63,8 +64,6 @@ void init_scene(Scene *scene)
     scene->showHelp = 1;
     scene->penguin.score = 0;
     scene->timer.start = clock();
-    scene->show_win = false;
-    scene->show_lose = false;
 }
 
 void set_lighting(float x)
@@ -113,7 +112,9 @@ void update_scene(Scene *scene)
 
     scene->timer.end = clock();
     if ((float)(scene->timer.end - scene->timer.start) / CLOCKS_PER_SEC > scene->timer.max_time)
+    {
         scene->show_lose = true;
+    }
 }
 
 void place_penguin(Scene *scene)
@@ -123,7 +124,7 @@ void place_penguin(Scene *scene)
     float random_y = (float)rand() / (float)(RAND_MAX / 14) - 7;
     scene->penguin.penguin_x = random_x;
     scene->penguin.penguin_y = random_y;
-    scene->penguin.position_z = 0;
+    scene->penguin.position_z = -5;
 }
 
 void render_scene(const Scene *scene)
