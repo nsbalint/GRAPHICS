@@ -229,7 +229,7 @@ void update_app(App *app)
     SDL_Event event;
     double current_time;
     double elapsed_time;
-    double last_time;
+    static double last_time = 0; // Initialize last_time
     double penguin_x = app->scene.penguin.penguin_x;
     double penguin_y = app->scene.penguin.penguin_y;
 
@@ -257,6 +257,21 @@ void update_app(App *app)
     if (app->scene.penguin.rotation_x > 360.0)
     {
         app->scene.penguin.rotation_x -= 360.0;
+    }
+
+    // Update penguin position based on direction
+    double speed = 0.05; // Adjust the speed as necessary
+    app->scene.penguin.penguin_x += app->scene.penguin.direction_x * speed;
+    app->scene.penguin.penguin_y += app->scene.penguin.direction_y * speed;
+
+    // Boundary check
+    if (app->scene.penguin.penguin_x < -7 || app->scene.penguin.penguin_x > 7)
+    {
+        app->scene.penguin.direction_x = -app->scene.penguin.direction_x;
+    }
+    if (app->scene.penguin.penguin_y < -7 || app->scene.penguin.penguin_y > 7)
+    {
+        app->scene.penguin.direction_y = -app->scene.penguin.direction_y;
     }
 
     app->scene.penguin.position_z = 0;

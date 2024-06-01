@@ -124,7 +124,12 @@ void place_penguin(Scene *scene)
     float random_y = (float)rand() / (float)(RAND_MAX / 14) - 7;
     scene->penguin.penguin_x = random_x;
     scene->penguin.penguin_y = random_y;
-    scene->penguin.position_z = -5;
+    scene->penguin.position_z = 0;
+
+    // Initialize random direction
+    float direction_angle = (float)rand() / (float)RAND_MAX * 2 * M_PI;
+    scene->penguin.direction_x = cos(direction_angle);
+    scene->penguin.direction_y = sin(direction_angle);
 }
 
 void render_scene(const Scene *scene)
