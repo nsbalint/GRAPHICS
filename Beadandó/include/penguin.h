@@ -8,7 +8,14 @@
 
 typedef struct Penguin
 {
-    Model penguin;
+    double penguin_x;
+    double penguin_y;
+    double position_z;
+    double rotation_x;
+    double direction_y;
+    double speed_y;        // Add speed for y direction
+    double rotation_angle; // Add rotation angle for facing direction
+    int score;
     GLuint penguin_texture;
     GLuint penguin_0_texture;
     GLuint penguin_1_texture;
@@ -21,15 +28,7 @@ typedef struct Penguin
     GLuint penguin_8_texture;
     GLuint penguin_9_texture;
     GLuint penguin_10_texture;
-
-    float penguin_x;
-    float penguin_y;
-    float rotation_x;
-    float position_z;
-    double direction_x;
-    double direction_y;
-    int score;
-
+    Model penguin;
 } Penguin;
 
 void init_penguin(Penguin *penguin);

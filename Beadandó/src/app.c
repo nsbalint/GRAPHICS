@@ -125,10 +125,10 @@ void handle_app_events(App *app)
             case SDL_SCANCODE_W:
                 if (app->scene.showHelp == 1)
                 {
-                    app->scene.difficulty += 1;
-                    if (app->scene.difficulty > 3)
+                    app->scene.difficulty -= 1;
+                    if (app->scene.difficulty < 1)
                     {
-                        app->scene.difficulty = 1;
+                        app->scene.difficulty = 3;
                     }
                     restart(&(app->scene));
                 }
@@ -140,10 +140,10 @@ void handle_app_events(App *app)
             case SDL_SCANCODE_S:
                 if (app->scene.showHelp == 1)
                 {
-                    app->scene.difficulty -= 1;
-                    if (app->scene.difficulty < 1)
+                    app->scene.difficulty += 1;
+                    if (app->scene.difficulty > 3)
                     {
-                        app->scene.difficulty = 3;
+                        app->scene.difficulty = 1;
                     }
                     restart(&(app->scene));
                 }
@@ -241,7 +241,7 @@ void update_app(App *app)
     SDL_Event event;
     double current_time;
     double elapsed_time;
-    double last_time;
+    static double last_time = 0; // Initialize last_time
     double penguin_x = app->scene.penguin.penguin_x;
     double penguin_y = app->scene.penguin.penguin_y;
 
@@ -260,7 +260,7 @@ void update_app(App *app)
         if (penguin_y - range < app->camera.position.y && app->camera.position.y < penguin_y + range)
         {
             app->scene.penguin.score++;
-            place_penguin(&(app->scene));
+            place_penguin(&(app->scene.penguin));
         }
     }
 
@@ -269,6 +269,18 @@ void update_app(App *app)
     if (app->scene.penguin.rotation_x > 360.0)
     {
         app->scene.penguin.rotation_x -= 360.0;
+    }
+
+    app->scene.penguin.penguin_y += app->scene.penguin.direction_y * app->scene.penguin.speed_y;
+
+    if (app->scene.penguin.penguin_y < -7 || app->scene.penguin.penguin_y > 7)
+    {
+        app->scene.penguin.direction_y = -app->scene.penguin.direction_y;
+        app->scene.penguin.rotation_angle += 180; // Rotate 180 degrees to face the opposite direction
+        if (app->scene.penguin.rotation_angle >= 360)
+        {
+            app->scene.penguin.rotation_angle -= 360;
+        }
     }
 
     app->scene.penguin.position_z = 0;

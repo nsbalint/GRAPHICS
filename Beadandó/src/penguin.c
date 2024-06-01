@@ -20,12 +20,31 @@ void init_penguin(Penguin *penguin)
     penguin->penguin_9_texture = load_texture("assets/textures/penguin_9.jpg");
     penguin->penguin_10_texture = load_texture("assets/textures/penguin_10.jpg");
 
-    srand(rand());
+    srand(time(NULL));
     penguin->penguin_x = 0;
     penguin->penguin_y = 0;
     penguin->rotation_x = 0.0;
     penguin->position_z = 0.0;
     penguin->score = 0;
+
+    // Initialize random direction
+    penguin->direction_y = ((float)rand() / RAND_MAX) > 0.5 ? 1.0 : -1.0; // Randomly choose up or down
+    penguin->speed_y = 0.05;                                              // Set a constant speed for y movement
+    penguin->rotation_angle = 0;                                          // Initialize rotation angle
+}
+
+void place_penguin(Penguin *penguin)
+{
+    float random_x = (float)rand() / (float)(RAND_MAX / 14) - 7;
+    float random_y = (float)rand() / (float)(RAND_MAX / 14) - 7;
+    penguin->penguin_x = random_x;
+    penguin->penguin_y = random_y;
+    penguin->position_z = 0;
+
+    // Initialize random direction
+    penguin->direction_y = ((float)rand() / RAND_MAX) > 0.5 ? 1.0 : -1.0; // Randomly choose up or down
+    penguin->speed_y = 0.05;                                              // Set a constant speed for y movement
+    penguin->rotation_angle = 0;                                          // Initialize rotation angle
 }
 
 void points(Penguin *penguin)

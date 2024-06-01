@@ -117,16 +117,6 @@ void update_scene(Scene *scene)
     }
 }
 
-void place_penguin(Scene *scene)
-{
-    srand(rand());
-    float random_x = (float)rand() / (float)(RAND_MAX / 14) - 7;
-    float random_y = (float)rand() / (float)(RAND_MAX / 14) - 7;
-    scene->penguin.penguin_x = random_x;
-    scene->penguin.penguin_y = random_y;
-    scene->penguin.position_z = -5;
-}
-
 void render_scene(const Scene *scene)
 {
     // ground
@@ -160,6 +150,7 @@ void render_scene(const Scene *scene)
     glTranslatef(scene->penguin.penguin_x, scene->penguin.penguin_y, scene->penguin.position_z);
     glRotated(90, 1, 0, 0);
     glRotatef(scene->penguin.rotation_x, 0, 1, 0);
+    glRotatef(scene->penguin.rotation_angle, 0, 1, 0); // Apply rotation angle
     draw_model(&(scene->penguin.penguin));
     glPopMatrix();
 
