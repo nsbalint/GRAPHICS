@@ -37,7 +37,7 @@ void init_app(App *app, int width, int height)
     reshape(width, height);
 
     init_camera(&(app->camera));
-    init_scene(&(app->scene)); // This ensures show_lose is set to false
+    init_scene(&(app->scene));
 
     app->is_running = true;
 }
@@ -119,31 +119,35 @@ void handle_app_events(App *app)
                     restart(&(app->scene));
                 }
                 break;
-            case SDL_SCANCODE_DOWN:
-                if (app->scene.difficulty < 3 && app->scene.showHelp == 1)
-                {
-                    app->scene.difficulty += 1;
-                    restart(&(app->scene));
-                }
-                break;
-            case SDL_SCANCODE_UP:
-                if (app->scene.difficulty > 1 && app->scene.showHelp == 1)
-                {
-                    app->scene.difficulty -= 1;
-                    restart(&(app->scene));
-                }
-                break;
             case SDL_SCANCODE_ESCAPE:
                 app->is_running = false;
                 break;
             case SDL_SCANCODE_W:
-                if (!(app->scene.show_win || app->scene.show_lose))
+                if (app->scene.showHelp == 1)
+                {
+                    app->scene.difficulty += 1;
+                    if (app->scene.difficulty > 3)
+                    {
+                        app->scene.difficulty = 1;
+                    }
+                    restart(&(app->scene));
+                }
+                else if (!(app->scene.show_win || app->scene.show_lose))
                 {
                     set_camera_speed(&(app->camera), 1);
                 }
                 break;
             case SDL_SCANCODE_S:
-                if (!(app->scene.show_win || app->scene.show_lose))
+                if (app->scene.showHelp == 1)
+                {
+                    app->scene.difficulty -= 1;
+                    if (app->scene.difficulty < 1)
+                    {
+                        app->scene.difficulty = 3;
+                    }
+                    restart(&(app->scene));
+                }
+                else if (!(app->scene.show_win || app->scene.show_lose))
                 {
                     set_camera_speed(&(app->camera), -1);
                 }
@@ -158,6 +162,12 @@ void handle_app_events(App *app)
                 if (!(app->scene.show_win || app->scene.show_lose))
                 {
                     set_camera_side_speed(&(app->camera), -1);
+                }
+                break;
+            case SDL_SCANCODE_LSHIFT:
+                if (!(app->scene.show_win || app->scene.show_lose))
+                {
+                    set_camera_speed(&(app->camera), 2);
                 }
                 break;
             case SDL_SCANCODE_KP_PLUS:
@@ -189,7 +199,11 @@ void handle_app_events(App *app)
             {
             case SDL_SCANCODE_W:
             case SDL_SCANCODE_S:
-                set_camera_speed(&(app->camera), 0);
+            case SDL_SCANCODE_LSHIFT:
+                if (app->scene.showHelp == 0)
+                {
+                    set_camera_speed(&(app->camera), 0);
+                }
                 break;
             case SDL_SCANCODE_A:
             case SDL_SCANCODE_D:
@@ -200,11 +214,9 @@ void handle_app_events(App *app)
             }
             break;
         case SDL_MOUSEBUTTONDOWN:
-            // Eltávolítjuk az is_mouse_down változót
             break;
         case SDL_MOUSEMOTION:
             SDL_GetMouseState(&x, &y);
-            // Az egér mozgásának kezelése folyamatosan történik, függetlenül attól, hogy az egér gomb le van-e nyomva
             if (!(app->scene.show_win || app->scene.show_lose))
             {
                 rotate_camera(&(app->camera), mouse_x - x, mouse_y - y);
@@ -229,7 +241,7 @@ void update_app(App *app)
     SDL_Event event;
     double current_time;
     double elapsed_time;
-    static double last_time = 0; // Initialize last_time
+    double last_time;
     double penguin_x = app->scene.penguin.penguin_x;
     double penguin_y = app->scene.penguin.penguin_y;
 
@@ -257,21 +269,6 @@ void update_app(App *app)
     if (app->scene.penguin.rotation_x > 360.0)
     {
         app->scene.penguin.rotation_x -= 360.0;
-    }
-
-    // Update penguin position based on direction
-    double speed = 0.05; // Adjust the speed as necessary
-    app->scene.penguin.penguin_x += app->scene.penguin.direction_x * speed;
-    app->scene.penguin.penguin_y += app->scene.penguin.direction_y * speed;
-
-    // Boundary check
-    if (app->scene.penguin.penguin_x < -7 || app->scene.penguin.penguin_x > 7)
-    {
-        app->scene.penguin.direction_x = -app->scene.penguin.direction_x;
-    }
-    if (app->scene.penguin.penguin_y < -7 || app->scene.penguin.penguin_y > 7)
-    {
-        app->scene.penguin.direction_y = -app->scene.penguin.direction_y;
     }
 
     app->scene.penguin.position_z = 0;
